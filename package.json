@@ -1,0 +1,19 @@
+{
+  "name": "bullhorn",
+  "version": "1.0.0",
+  "description": "Relay robot for Shawn so he doesn't have to individually message 8 servers when they're all down.",
+  "main": "Bullhorn.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dpalay/Bullhorn.git"
+  },
+  "author": "Dave Palay",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dpalay/Bullhorn/issues"
+  },
+  "homepage": "https://github.com/dpalay/Bullhorn#readme"
+}
