@@ -51,31 +51,13 @@ client.on('ready', () => {
     ME = client.user;
     ME.setActivity("Shawn's Minion");
 
-    // get list of guilds (servers) and see if there is a channel named "#announcements"
-    client.guilds.forEach((guild) => {
-        let FindAnnouncementsPromise = new Promise((result) => { result(guild.channels.find((chan) => chan.name.toLowerCase == "announcements")) });
-        FindAnnouncementsPromise.then((chan) => {
-            if (chan) {
-                console.log(`Server:${guild.name}\tAnnouncement channel found!`);
-                if (chan.permissionsFor(ME).has("SEND_MESSAGES")) {
-                    console.log(`Server:${guild.name}\tI can send to that channel! Added to broadcast list`);
-                    broadcastToChannels.push(chan);
-                } else {
-                    console.error(`Server:${guild.name}\tI can't send to that channel!  I need permission to SEND_MESSAGES.`);
-                }
-            } else {
-                console.error(`Server:${guild.name}\thas no "announcements" channel.`);
-            }
-        }).catch((e) => console.error(e));
-    })
-
     // Add channels from config file
     config.broadcastTo.forEach((id) => {
         let chan = client.channels.get(id);
         if (chan) {
             //Check if it already exists in the list
             if (broadcastToChannels.includes(chan)) {
-                console.log(`Server:${chan.guild.name}\tChannel already exists as annoucement. Skipping`);
+                console.log(`Server:${chan.guild.name}\tChannel already listed. Skipping`);
             } else {
 
                 console.log(`Server:${chan.guild.name}\tChannel:${chan.name} found from config file!`);
@@ -87,9 +69,33 @@ client.on('ready', () => {
                 }
             }
         } else {
-            console.error(`Server:UNKNOWN\tCan't find any channel with that ID.  I'm not on that server.`);
+            console.error(`Server:UNKNOWN\tCan't find any channel with ID ${id}.`);
         }
     })
+
+    // get list of guilds (servers) and see if there is a channel named "#announcements"
+    client.guilds.forEach((guild) => {
+        let FindAnnouncementsPromise = new Promise((result) => { result(guild.channels.find((chan) => chan.name.toLowerCase() == "announcements")) });
+        FindAnnouncementsPromise.then((chan) => {
+            if (chan) {
+                //Check if it already exists in the list
+                if (config.broadcastTo.includes(chan.id)) {
+                    console.log(`Server:${guild.name}\tAnnouncement channel already listed in config. Skipping`);
+                } else {
+                    console.log(`Server:${guild.name}\tAnnouncement channel found!`);
+                    if (chan.permissionsFor(ME).has("SEND_MESSAGES")) {
+                        console.log(`Server:${guild.name}\tI can send to that channel! Added to broadcast list`);
+                        broadcastToChannels.push(chan);
+                    } else {
+                        console.error(`Server:${guild.name}\tI can't send to that channel!  I need permission to SEND_MESSAGES.`);
+                    }
+                }
+            } else {
+                console.error(`Server:${guild.name}\thas no "announcements" channel.`);
+            }
+        }).catch((e) => console.error(e));
+    })
+
 
     // Find Shawn and obey his every whim.
     client.fetchUser(config.watchUser).then((Shawn) => {
@@ -104,4 +110,6 @@ client.on('ready', () => {
 
 // connect
 console.log("Logging in!");
-client.login(config.token).then().catch((e) => console.error(e));
+client.login(config.token)
+    .then()
+    .catch((e) => console.error(e));
